@@ -1,47 +1,98 @@
-# A Neovim Plugin Template
+# clack.nvim
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ellisonleao/nvim-plugin-template/lint-test.yml?branch=main&style=for-the-badge)
-![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
+`clack.nvim` adds mechanical keyboard sound effects to Neovim keystrokes.
 
-A template repository for Neovim plugins.
+## Requirements
 
-## Using it
+- Neovim >= 0.10.0 (`vim.system()` is required)
+- One of:
+  - `afplay` (macOS)
+  - `aplay` (Linux)
+  - PowerShell (Windows)
 
-Via `gh`:
+## Installation
+
+### lazy.nvim
+
+```lua
+{
+  "your-user/clack.nvim",
+  opts = {
+    profile = "cherry_mx_blue",
+    volume = 0.8,
+    enabled = true,
+    on_enter = true,
+    on_space = true,
+    on_save = true,
+  },
+}
+```
+
+### packer.nvim
+
+```lua
+use({
+  "your-user/clack.nvim",
+  config = function()
+    require("clack").setup({
+      profile = "cherry_mx_blue",
+      volume = 0.8,
+      enabled = true,
+      on_enter = true,
+      on_space = true,
+      on_save = true,
+    })
+  end,
+})
+```
+
+## Configuration
+
+```lua
+require("clack").setup({
+  profile = "cherry_mx_blue",
+  volume = 0.8,
+  enabled = true,
+  on_enter = true,
+  on_space = true,
+  on_save = true,
+})
+```
+
+Available profiles:
+
+- `cherry_mx_blue` (clicky)
+- `cherry_mx_red` (linear)
+- `topre` (thocky)
+- `buckling_spring` (IBM Model M)
+
+Public API:
+
+- `require("clack").setup(opts)`
+- `require("clack").enable()`
+- `require("clack").disable()`
+- `require("clack").toggle()`
+
+Commands:
+
+- `:ClackEnable`
+- `:ClackDisable`
+- `:ClackToggle`
+
+## Sound assets
+
+Sounds are resolved relative to the plugin install directory, with this convention:
 
 ```
-$ gh repo create my-plugin -p ellisonleao/nvim-plugin-template
+sounds/
+  blue/
+    key_1.wav key_2.wav key_3.wav key_4.wav
+    enter_1.wav enter_2.wav enter_3.wav enter_4.wav
+    space_1.wav space_2.wav space_3.wav space_4.wav
+    save_1.wav save_2.wav save_3.wav save_4.wav
+  red/
+  topre/
+  buckling_spring/
 ```
 
-Via github web page:
-
-Click on `Use this template`
-
-![](https://docs.github.com/assets/cb-36544/images/help/repository/use-this-template-button.png)
-
-## Features and structure
-
-- 100% Lua
-- Github actions for:
-  - running tests using [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) and [busted](https://olivinelabs.com/busted/)
-  - check for formatting errors (Stylua)
-  - vimdocs autogeneration from README.md file
-  - luarocks release (LUAROCKS_API_KEY secret configuration required)
-
-### Plugin structure
-
-```
-.
-├── lua
-│   ├── plugin_name
-│   │   └── module.lua
-│   └── plugin_name.lua
-├── Makefile
-├── plugin
-│   └── plugin_name.lua
-├── README.md
-├── tests
-│   ├── minimal_init.lua
-│   └── plugin_name
-│       └── plugin_name_spec.lua
-```
+Each keypress uses `InsertCharPre` and randomly picks one of four key variations for a more natural feel. Enter and Space use their own sound pools when enabled.
