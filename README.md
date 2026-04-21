@@ -5,7 +5,9 @@
 ## Requirements
 
 - Neovim >= 0.10.0 (`vim.system()` is required)
-- One of:
+- For bundled single-file `.ogg` profiles:
+  - `ffmpeg` to pre-extract the clip cache
+- For legacy per-file `.wav` profiles, one of:
   - `afplay` (macOS)
   - `aplay` (Linux)
   - PowerShell (Windows)
@@ -50,7 +52,7 @@ use({
 
 ```lua
 require("clack").setup({
-  profile = "cherry_mx_blue",
+  profile = "cherrymx-blue-pbt",
   volume = 0.8,
   enabled = true,
   on_enter = true,
@@ -59,16 +61,31 @@ require("clack").setup({
 })
 ```
 
-Available profiles:
+Available profiles are detected from `sounds/<folder>` and use the folder name as the profile id. Current bundled folders include:
 
-- `cherry_mx_blue` (clicky)
-- `cherry_mx_red` (linear)
-- `topre` (thocky)
-- `buckling_spring` (IBM Model M)
+- `cherrymx-blue-pbt`
+- `cherrymx-blue-abs`
+- `cherrymx-red-pbt`
+- `cherrymx-red-abs`
+- `cherrymx-brown-pbt`
+- `cherrymx-brown-abs`
+- `cherrymx-black-pbt`
+- `cherrymx-black-abs`
+- `topre-purple-hybrid-pbt`
+- `eg-crystal-purple`
+- `eg-oreo`
+- `holy-pandas`
+- `mxblue-travel`
+- `mxblack-travel`
+- `mxbrown-travel`
+- `cream-travel`
+- `turquoise`
+- `nk-cream`
 
 Public API:
 
 - `require("clack").setup(opts)`
+- `require("clack").set_profile(name)`
 - `require("clack").enable()`
 - `require("clack").disable()`
 - `require("clack").toggle()`
@@ -78,10 +95,13 @@ Commands:
 - `:ClackEnable`
 - `:ClackDisable`
 - `:ClackToggle`
+- `:ClackProfile <sounds-folder>`
 
 ## Sound assets
 
-Sounds are resolved relative to the plugin install directory, with this convention:
+Sounds are resolved relative to the plugin install directory. `clack.nvim` now supports both the original pool layout and `config.json` packs that slice a single `.ogg` file into per-key clips.
+
+Pool layout:
 
 ```
 sounds/
@@ -95,4 +115,13 @@ sounds/
   buckling_spring/
 ```
 
-Each keypress uses `InsertCharPre` and randomly picks one of four key variations for a more natural feel. Enter and Space use their own sound pools when enabled.
+Single-file layout:
+
+```
+sounds/
+  cherrymx-blue-pbt/
+    config.json
+    sound.ogg
+```
+
+For single-file packs, the plugin reads the `defines` map from `config.json`, keeps a small variation pool for generic typing, and pre-extracts those slices to cached `.wav` files in the temp directory before normal playback starts. Because Neovim only exposes inserted characters rather than raw keyboard scan codes, save sounds reuse the generic key pool and release-only slices are ignored.

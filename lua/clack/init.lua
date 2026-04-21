@@ -3,15 +3,16 @@ local events = require("clack.events")
 local profiles = require("clack.profiles")
 
 ---@class ClackConfig
----@field profile "cherry_mx_blue"|"cherry_mx_red"|"topre"|"buckling_spring"
+---@field profile string
 ---@field volume number
 ---@field enabled boolean
 ---@field on_enter boolean
 ---@field on_space boolean
 ---@field on_save boolean
 
+local default_profile = profiles.default_name() or "cherry_mx_blue"
 local defaults = {
-  profile = "cherry_mx_blue",
+  profile = default_profile,
   volume = 0.8,
   enabled = true,
   on_enter = true,
@@ -71,6 +72,15 @@ local function play_from_pool(pool)
   audio.play_audio(sound, M.config.volume)
 end
 
+local function profile_pool(profile, kind)
+  local pool = profile and profile[kind]
+  if type(pool) == "table" and #pool > 0 then
+    return pool
+  end
+
+  return profile and profile.key or nil
+end
+
 function M._on_char(char)
   local profile = current_profile()
   if not profile then
@@ -79,16 +89,16 @@ function M._on_char(char)
   end
 
   if (char == "\r" or char == "\n") and M.config.on_enter then
-    play_from_pool(profile.enter)
+    play_from_pool(profile_pool(profile, "enter"))
     return
   end
 
   if char == " " and M.config.on_space then
-    play_from_pool(profile.space)
+    play_from_pool(profile_pool(profile, "space"))
     return
   end
 
-  play_from_pool(profile.key)
+  play_from_pool(profile_pool(profile, "key"))
 end
 
 function M._on_save()
@@ -102,7 +112,7 @@ function M._on_save()
     return
   end
 
-  play_from_pool(profile.save)
+  play_from_pool(profile_pool(profile, "save"))
 end
 
 function M.setup(opts)
@@ -111,7 +121,7 @@ function M.setup(opts)
 
   if not profiles.has(merged.profile) then
     vim.notify(("clack.nvim: invalid profile '%s'"):format(tostring(merged.profile)), vim.log.levels.ERROR)
-    merged.profile = defaults.profile
+    merged.profile = profiles.default_name() or defaults.profile
   end
 
   seed_random()
@@ -131,12 +141,32 @@ function M.setup(opts)
   return M
 end
 
+function M.set_profile(name)
+  if not profiles.has(name) then
+    vim.notify(("clack.nvim: invalid profile '%s'"):format(tostring(name)), vim.log.levels.ERROR)
+    return false
+  end
+
+  M.setup({
+    profile = name,
+    volume = M.config.volume,
+    enabled = M.config.enabled,
+    on_enter = M.config.on_enter,
+    on_space = M.config.on_space,
+    on_save = M.config.on_save,
+  })
+
+  vim.notify(("clack.nvim: profile set to '%s'"):format(name), vim.log.levels.INFO)
+  return true
+end
+
 function M.enable()
   if M.enabled then
     return
   end
 
   seed_random()
+  audio.prepare_profile(current_profile())
 
   events.enable(M.config, {
     on_char = M._on_char,
