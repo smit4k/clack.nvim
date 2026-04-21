@@ -1,6 +1,9 @@
-# clack.nvim
-
-`clack.nvim` adds mechanical keyboard sound effects to Neovim keystrokes.
+<h1 align='center'>
+    clack.nvim
+</h1>
+<p align='center'>
+  <b>Add mechanical keyboard sound effects to Neovim!</b>
+</p>
 
 ## Requirements
 
@@ -14,7 +17,7 @@
 
 ## Installation
 
-### lazy.nvim
+Use your favorite plugin manager!
 
 ```lua
 {
@@ -28,37 +31,6 @@
     on_save = true,
   },
 }
-```
-
-### packer.nvim
-
-```lua
-use({
-  "your-user/clack.nvim",
-  config = function()
-    require("clack").setup({
-      profile = "cherry_mx_blue",
-      volume = 0.8,
-      enabled = true,
-      on_enter = true,
-      on_space = true,
-      on_save = true,
-    })
-  end,
-})
-```
-
-## Configuration
-
-```lua
-require("clack").setup({
-  profile = "cherrymx-blue-pbt",
-  volume = 0.8,
-  enabled = true,
-  on_enter = true,
-  on_space = true,
-  on_save = true,
-})
 ```
 
 Available profiles are detected from `sounds/<folder>` and use the folder name as the profile id. Current bundled folders include:
@@ -81,14 +53,6 @@ Available profiles are detected from `sounds/<folder>` and use the folder name a
 - `cream-travel`
 - `turquoise`
 - `nk-cream`
-
-Public API:
-
-- `require("clack").setup(opts)`
-- `require("clack").set_profile(name)`
-- `require("clack").enable()`
-- `require("clack").disable()`
-- `require("clack").toggle()`
 
 Commands:
 
