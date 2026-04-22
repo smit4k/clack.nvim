@@ -23,7 +23,7 @@ Use your favorite plugin manager!
 
 ```lua
 {
-  "your-user/clack.nvim",
+  "smit4k/clack.nvim",
   opts = {
     profile = "cherry_mx_blue",
     volume = 0.8,
