@@ -14,8 +14,9 @@
   - `afplay` (macOS)
   - `aplay` (Linux)
   - PowerShell (Windows)
-
-- ⚠️ There is a noticable delay when using wireless headphones/earbuds. Use wired earbuds for the best experience.
+  
+> [!WARNING]
+> There is a noticable delay when using **wireless** headphones/earbuds. Use wired earbuds for the best experience.
 ## Installation
 
 Use your favorite plugin manager!
