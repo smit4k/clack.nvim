@@ -316,7 +316,7 @@ function M.names()
 end
 
 function M.default_name()
-  for _, name in ipairs({ "cherrymx-blue-pbt", "cherry_mx_blue", "blue" }) do
+  for _, name in ipairs({ "nk-cream" }) do
     if M.has(name) then
       return name
     end
