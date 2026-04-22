@@ -18,15 +18,13 @@ end
 
 vim.api.nvim_create_user_command("ClackEnable", function()
   require("clack").enable()
+  vim.notify("Keyboard sounds have been enabled!", vim.log.levels.INFO)
 end, { desc = "Enable clack.nvim key sounds" })
 
 vim.api.nvim_create_user_command("ClackDisable", function()
   require("clack").disable()
+  vim.notify("Keyboard sounds have been disabled!", vim.log.levels.INFO)
 end, { desc = "Disable clack.nvim key sounds" })
-
-vim.api.nvim_create_user_command("ClackToggle", function()
-  require("clack").toggle()
-end, { desc = "Toggle clack.nvim key sounds" })
 
 vim.api.nvim_create_user_command("ClackProfile", function(opts)
   require("clack").set_profile(opts.args)
