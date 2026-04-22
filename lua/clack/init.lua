@@ -9,6 +9,7 @@ local profiles = require("clack.profiles")
 ---@field on_enter boolean
 ---@field on_space boolean
 ---@field on_save boolean
+---@field on_non_insert boolean
 
 local default_profile = profiles.default_name() or "cherry_mx_blue"
 local defaults = {
@@ -18,6 +19,7 @@ local defaults = {
   on_enter = true,
   on_space = true,
   on_save = true,
+  on_non_insert = false,
 }
 
 local random_seeded = false
@@ -154,6 +156,7 @@ function M.set_profile(name)
     on_enter = M.config.on_enter,
     on_space = M.config.on_space,
     on_save = M.config.on_save,
+    on_non_insert = M.config.on_non_insert,
   })
 
   vim.notify(("clack.nvim: profile set to '%s'"):format(name), vim.log.levels.INFO)

@@ -29,6 +29,7 @@ Use your favorite plugin manager!
     on_enter = true,
     on_space = true,
     on_save = true,
+    on_non_insert = false,
   },
 }
 ```
@@ -60,6 +61,8 @@ Commands:
 - `:ClackDisable`
 - `:ClackToggle`
 - `:ClackProfile <sounds-folder>`
+
+Set `on_non_insert = true` if you also want sounds for motions, counts, and other non-insert keystrokes.
 
 ## Sound assets
 
