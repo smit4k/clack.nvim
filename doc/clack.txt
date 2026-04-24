@@ -1,0 +1,101 @@
+*clack.txt*      Mechanical keyboard sound effects for Neovim
+
+==============================================================================
+CONTENTS                                                     *clack-contents*
+
+1. Introduction.............................................|clack-intro|
+2. Requirements.............................................|clack-requirements|
+3. Setup....................................................|clack-setup|
+4. Commands.................................................|clack-commands|
+5. Profiles.................................................|clack-profiles|
+6. Troubleshooting..........................................|clack-troubleshooting|
+
+==============================================================================
+INTRODUCTION                                                    *clack-intro*
+
+clack.nvim adds mechanical keyboard sound effects to typing in Neovim.
+Profiles are discovered from |sounds/<folder>| inside the plugin directory.
+
+==============================================================================
+REQUIREMENTS                                            *clack-requirements*
+
+- Neovim 0.10.0 or newer
+- A supported playback backend:
+  - macOS: `afplay`
+  - Linux: `aplay`
+  - Windows: PowerShell
+- For bundled single-file `.ogg` packs:
+  - either `ffplay` or `mpv`
+  - or `ffmpeg` plus the supported OS playback backend
+
+Run |:checkhealth clack| to verify the active backend and profile.
+
+==============================================================================
+SETUP                                                            *clack-setup*
+
+Example with `lazy.nvim`: >
+  {
+    "your-user/clack.nvim",
+    opts = {
+      profile = "nk-cream",
+      volume = 0.8,
+      enabled = true,
+      on_enter = true,
+      on_space = true,
+      on_save = true,
+      on_non_insert = false,
+    },
+  }
+<
+
+Config fields:
+
+- `profile`: folder name under `sounds/`
+- `volume`: range `0.0` to `1.0`
+- `enabled`: enable sounds on startup
+- `on_enter`: use the enter pool for newline input
+- `on_space`: use the space pool for spaces
+- `on_save`: play a sound after `:write`
+- `on_non_insert`: also play sounds for normal/visual/select-mode keys
+
+==============================================================================
+COMMANDS                                                      *clack-commands*
+
+- `:ClackEnable`
+- `:ClackDisable`
+- `:ClackToggle`
+- `:ClackProfile`
+
+`ClackProfile` opens a |vim.ui.select()| menu populated from detected
+`sounds/<folder>` names. Picker UIs provided by other plugins will be used
+automatically when they override |vim.ui.select()|.
+
+==============================================================================
+PROFILES                                                      *clack-profiles*
+
+Canonical profile ids are the detected `sounds/<folder>` names. Older alias
+names continue to work for compatibility, but folder names are the supported
+public interface.
+
+Two profile layouts are supported:
+
+1. Per-file pools with `key_*.wav`, `enter_*.wav`, `space_*.wav`, `save_*.wav`
+2. `config.json` packs that slice a single audio file into clips
+
+Single-file packs pre-extract cached `.wav` clips before playback when
+possible. Save sounds reuse the generic key pool because Neovim exposes
+characters, not raw keyboard scan codes.
+
+==============================================================================
+TROUBLESHOOTING                                        *clack-troubleshooting*
+
+- Run |:checkhealth clack| first.
+- If playback is unavailable, install the backend reported by health output.
+- If a profile does not load, switch to one of the detected `sounds/<folder>`
+  names shown by |:checkhealth clack| or the |:ClackProfile| menu.
+- On Linux and Windows, `volume` may not be controllable by the active backend.
+  In that case, adjust your system mixer instead.
+- Wireless headphones can add noticeable latency. Wired output usually feels
+  better.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

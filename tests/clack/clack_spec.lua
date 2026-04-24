@@ -97,17 +97,114 @@ describe("clack", function()
     assert.are.equal("eg-oreo", clack.config.profile)
   end)
 
-  it("switches profiles through the ClackProfile command", function()
+  it("switches profiles through the ClackProfile menu", function()
+    vim.cmd("runtime plugin/clack.lua")
+    local original_select = vim.ui.select
+
+    local ok, err = pcall(function()
+      clack.setup({
+        profile = "cherrymx-blue-pbt",
+        enabled = false,
+      })
+
+      vim.ui.select = function(items, opts, on_choice)
+        assert.are.equal("Select clack profile", opts.prompt)
+        assert.is_true(#items > 0)
+
+        for _, item in ipairs(items) do
+          if item.name == "cherrymx-blue-pbt" then
+            assert.are.equal("* cherrymx-blue-pbt", opts.format_item(item))
+          end
+
+          if item.name == "holy-pandas" then
+            on_choice(item)
+            return
+          end
+        end
+
+        error("expected holy-pandas in picker items")
+      end
+
+      vim.cmd("ClackProfile")
+
+      assert.are.equal("holy-pandas", clack.config.profile)
+    end)
+
+    vim.ui.select = original_select
+
+    if not ok then
+      error(err)
+    end
+  end)
+
+  it("does nothing when the ClackProfile menu is cancelled", function()
+    vim.cmd("runtime plugin/clack.lua")
+    local original_select = vim.ui.select
+
+    local ok, err = pcall(function()
+      clack.setup({
+        profile = "holy-pandas",
+        enabled = false,
+      })
+
+      vim.ui.select = function(_, _, on_choice)
+        on_choice(nil)
+      end
+
+      vim.cmd("ClackProfile")
+
+      assert.are.equal("holy-pandas", clack.config.profile)
+    end)
+
+    vim.ui.select = original_select
+
+    if not ok then
+      error(err)
+    end
+  end)
+
+  it("registers the public user commands", function()
     vim.cmd("runtime plugin/clack.lua")
 
-    clack.setup({
-      profile = "cherrymx-blue-pbt",
-      enabled = false,
-    })
+    assert.are.equal(2, vim.fn.exists(":ClackEnable"))
+    assert.are.equal(2, vim.fn.exists(":ClackDisable"))
+    assert.are.equal(2, vim.fn.exists(":ClackToggle"))
+    assert.are.equal(2, vim.fn.exists(":ClackProfile"))
+  end)
 
-    vim.cmd("ClackProfile holy-pandas")
+  it("toggles state through the ClackToggle command", function()
+    vim.cmd("runtime plugin/clack.lua")
+    clack.setup({ enabled = false })
 
-    assert.are.equal("holy-pandas", clack.config.profile)
+    vim.cmd("ClackToggle")
+    assert.is_true(clack.enabled)
+
+    vim.cmd("ClackToggle")
+    assert.is_false(clack.enabled)
+  end)
+
+  it("does not enable when playback validation fails", function()
+    local original_validate_profile = audio.validate_profile
+
+    local ok, err = pcall(function()
+      audio.validate_profile = function()
+        return false, { backend = "unsupported" }
+      end
+
+      clack.setup({
+        profile = "eg-oreo",
+        enabled = true,
+      })
+
+      assert.is_false(clack.enabled)
+      assert.is_false(clack.config.enabled)
+    end)
+
+    audio.validate_profile = original_validate_profile
+
+    if not ok then
+      error(err)
+    end
   end)
 
   it("plays sounds for normal-mode motions", function()

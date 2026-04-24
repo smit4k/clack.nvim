@@ -4,19 +4,22 @@
 <p align='center'>
   <b>Add mechanical keyboard sound effects to Neovim!</b>
 </p>
-
+![Custom Badge](https://img.shields.io/badge/ai-assisted-codex-?style=flat-square&logo=&logoColor=)
 ## Requirements
 
 - Neovim >= 0.10.0 (`vim.system()` is required)
-- For bundled single-file `.ogg` profiles:
-  - `ffmpeg` to pre-extract the clip cache
 - For legacy per-file `.wav` profiles, one of:
   - `afplay` (macOS)
   - `aplay` (Linux)
   - PowerShell (Windows)
-  
+- For bundled single-file `.ogg` profiles, either:
+  - `ffplay`
+  - `mpv`
+  - or `ffmpeg` plus the OS audio backend above
+
 > [!WARNING]
 > There is a noticable delay when using **wireless** headphones/earbuds. Use wired earbuds for the best experience.
+
 ## Installation
 
 Use your favorite plugin manager!
@@ -25,7 +28,7 @@ Use your favorite plugin manager!
 {
   "smit4k/clack.nvim",
   opts = {
-    profile = "cherry_mx_blue",
+    profile = "nk-cream",
     volume = 0.8,
     enabled = true,
     on_enter = true,
@@ -62,9 +65,11 @@ Commands:
 - `:ClackEnable`
 - `:ClackDisable`
 - `:ClackToggle`
-- `:ClackProfile <sounds-folder>`
+- `:ClackProfile`
+- `:checkhealth clack`
 
 Set `on_non_insert = true` if you also want sounds for motions, counts, and other non-insert keystrokes.
+Run `:checkhealth clack` if playback is unavailable or a profile does not seem to load.
 
 ## Sound assets
 
@@ -93,4 +98,4 @@ sounds/
     sound.ogg
 ```
 
-For single-file packs, the plugin reads the `defines` map from `config.json`, keeps a small variation pool for generic typing, and pre-extracts those slices to cached `.wav` files in the temp directory before normal playback starts. Because Neovim only exposes inserted characters rather than raw keyboard scan codes, save sounds reuse the generic key pool and release-only slices are ignored.
+For single-file packs, the plugin reads the `defines` map from `config.json`, keeps a small variation pool for generic typing, and pre-extracts those slices to cached `.wav` files in the temp directory when possible. If `ffmpeg` is unavailable, `ffplay` or `mpv` can play slices directly. Because Neovim only exposes inserted characters rather than raw keyboard scan codes, save sounds reuse the generic key pool and release-only slices are ignored.
