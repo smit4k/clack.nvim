@@ -4,7 +4,6 @@
 <p align='center'>
   <b>Add mechanical keyboard sound effects to Neovim!</b>
 </p>
-![Custom Badge](https://img.shields.io/badge/ai-assisted-codex-?style=flat-square&logo=&logoColor=)
 ## Requirements
 
 - Neovim >= 0.10.0 (`vim.system()` is required)
