@@ -4,6 +4,7 @@
 <p align='center'>
   <b>Add mechanical keyboard sound effects to Neovim!</b>
 </p>
+
 ## Requirements
 
 - Neovim >= 0.10.0 (`vim.system()` is required)
