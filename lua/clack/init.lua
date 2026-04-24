@@ -57,6 +57,17 @@ local function current_profile()
   return profiles.get(M.config.profile)
 end
 
+local function validate_current_profile()
+  local profile = current_profile()
+  if not profile then
+    vim.notify(("clack.nvim: unknown profile '%s'"):format(M.config.profile), vim.log.levels.ERROR)
+    return false, nil, nil
+  end
+
+  local ok, capability = audio.validate_profile(profile, M.config.volume)
+  return ok, profile, capability
+end
+
 local function random_sample(items)
   if type(items) ~= "table" or #items == 0 then
     return nil
@@ -128,6 +139,7 @@ function M.setup(opts)
 
   seed_random()
   M.config = merged
+  validate_current_profile()
 
   if M.enabled then
     events.disable()
@@ -169,7 +181,13 @@ function M.enable()
   end
 
   seed_random()
-  audio.prepare_profile(current_profile())
+  local ok, profile = validate_current_profile()
+  if not ok then
+    M.config.enabled = false
+    return
+  end
+
+  audio.prepare_profile(profile)
 
   events.enable(M.config, {
     on_char = M._on_char,
